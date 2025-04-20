@@ -79,26 +79,22 @@
     <div class="result" id="result"></div>
   </div>
 
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Spin & Win</title>
+</head>
+<body>
+  <h2>Spin the Wheel & Win!</h2>
+
+  <input type="text" id="name" placeholder="Enter your name"><br><br>
+  <input type="text" id="phone" placeholder="Enter your phone number"><br><br>
+  <button id="spinBtn" onclick="spinWheel()">Spin the Wheel</button>
+
+  <div id="spinner" style="display:none;">🌀 Spinning...</div>
+  <div id="result" style="margin-top: 20px; font-weight: bold;"></div>
+
   <script>
-
-    function doPost(e) {
-  try {
-    const sheet = SpreadsheetApp.openById("1aISFSsFKEyoqVqG8ro8SM2_mH3J32bKcCLdpfj839ow").getSheetByName("Sheet1");
-
-    const data = JSON.parse(e.postData.contents);
-    const name = data.name || "";
-    const phone = data.phone || "";
-    const reward = data.reward || "";
-
-    sheet.appendRow([new Date(), name, phone, reward]);
-
-    return ContentService.createTextOutput("Success").setMimeType(ContentService.MimeType.TEXT);
-  } catch (err) {
-    return ContentService.createTextOutput("Error: " + err.message).setMimeType(ContentService.MimeType.TEXT);
-  }
-}
-
-    
     const rewards = [
       "15% Off Next Visit",
       "Free Consultation (Dental or Skin)",
@@ -127,9 +123,14 @@
         spinner.style.display = "none";
         document.getElementById("spinBtn").disabled = true;
 
-        fetch("https://script.google.com/macros/s/AKfycbwEa02OikK03736ShYi_umgUEvAGAXkWzapHH2KKhuXAqSN6KPN8T-VAPnLcixG0nOStg/exec", {
+        // Replace below URL with your deployed Web App URL
+        const webAppURL = "https://script.google.com/macros/s/AKfycbzPjpTDDoVadPAEjTTQYizWb2xqbVZ9SY4FvUW0vdBZcGWm8kY3NYmXZXzDkD6oeNjn5g/exec";
+
+        fetch(webAppURL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({ name, phone, reward })
         })
         .then(response => response.text())
@@ -138,5 +139,8 @@
       }, 2000);
     }
   </script>
+</body>
+</html>
+
 </body>
 </html>
