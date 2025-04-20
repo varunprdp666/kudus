@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spin & Win - D-Dental Care</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      background-color: #fdf6ec;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background-color: #ffffff;
+    }
+    .logo {
+      width: 100px;
+      margin-bottom: 15px;
+    }
+    .btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+      background-color: #0074cc;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn:disabled {
+      background-color: #ccc;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+    }
+    .spinner {
+      margin: 20px auto;
+      width: 40px;
+      height: 40px;
+      border: 4px solid #ccc;
+      border-top-color: #0074cc;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    input {
+      width: 90%;
+      padding: 10px;
+      font-size: 14px;
+      margin: 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="logo.png" alt="Tooth Logo" class="logo" />
+    <h2>🎉 D-Dental Care – Spin & Win 🎉</h2>
+    <p>Enter your details and spin the wheel to win a reward!</p>
+    <input type="text" id="name" placeholder="Your Name" /><br />
+    <input type="text" id="phone" placeholder="Phone Number" /><br />
+    <button class="btn" onclick="spinWheel()" id="spinBtn">Spin Now</button>
+    <div class="spinner" id="spinner"></div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    const rewards = [
+      "15% Off Next Visit",
+      "Free Consultation (Dental or Skin)",
+      "₹100 Cashback on Your Next Visit",
+      "Free Teeth Cleaning with Your Next Treatment",
+      "Free Dental Cleaning"
+    ];
+
+    function spinWheel() {
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const resultEl = document.getElementById("result");
+      const spinner = document.getElementById("spinner");
+
+      if (!name || !phone) {
+        alert("Please enter both name and phone number.");
+        return;
+      }
+
+      spinner.style.display = "block";
+      resultEl.innerText = "Spinning the wheel...";
+
+      setTimeout(() => {
+        const reward = rewards[Math.floor(Math.random() * rewards.length)];
+        resultEl.innerText = `🎁 Congrats ${name}! You’ve won: ${reward}`;
+        spinner.style.display = "none";
+        document.getElementById("spinBtn").disabled = true;
+
+        fetch("https://script.google.com/macros/s/AKfycbwEa02OikK03736ShYi_umgUEvAGAXkWzapHH2KKhuXAqSN6KPN8T-VAPnLcixG0nOStg/exec", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, phone, reward })
+        })
+        .then(response => response.text())
+        .then(data => console.log("Logged to Google Sheets:", data))
+        .catch(error => console.error("Error:", error));
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
