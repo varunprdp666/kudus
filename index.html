@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Spin & Win - D-Dental Care</title>
   <style>
     body {
@@ -79,22 +78,30 @@
     <div class="result" id="result"></div>
   </div>
 
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Spin & Win</title>
-</head>
-<body>
-  <h2>Spin the Wheel & Win!</h2>
+  <!-- Firebase SDKs -->
+  <script type="module">
+    // Import required Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-analytics.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
 
-  <input type="text" id="name" placeholder="Enter your name"><br><br>
-  <input type="text" id="phone" placeholder="Enter your phone number"><br><br>
-  <button id="spinBtn" onclick="spinWheel()">Spin the Wheel</button>
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyA8AIx4iULOVGnZexp30IQ4CMma9OvLWzQ",
+      authDomain: "react-app-69d38.firebaseapp.com",
+      projectId: "react-app-69d38",
+      storageBucket: "react-app-69d38.firebasestorage.app",
+      messagingSenderId: "554997966155",
+      appId: "1:554997966155:web:12d9c82866c7652e7f74ce",
+      measurementId: "G-X00LVPCDRS"
+    };
 
-  <div id="spinner" style="display:none;">🌀 Spinning...</div>
-  <div id="result" style="margin-top: 20px; font-weight: bold;"></div>
+    // Initialize Firebase and Firestore
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
 
-  <script>
+    // Reward options
     const rewards = [
       "15% Off Next Visit",
       "Free Consultation (Dental or Skin)",
@@ -103,7 +110,8 @@
       "Free Dental Cleaning"
     ];
 
-    function spinWheel() {
+    // Global scope function
+    window.spinWheel = async function () {
       const name = document.getElementById("name").value.trim();
       const phone = document.getElementById("phone").value.trim();
       const resultEl = document.getElementById("result");
@@ -117,30 +125,26 @@
       spinner.style.display = "block";
       resultEl.innerText = "Spinning the wheel...";
 
-      setTimeout(() => {
+      setTimeout(async () => {
         const reward = rewards[Math.floor(Math.random() * rewards.length)];
         resultEl.innerText = `🎁 Congrats ${name}! You’ve won: ${reward}`;
         spinner.style.display = "none";
         document.getElementById("spinBtn").disabled = true;
 
-        // Replace below URL with your deployed Web App URL
-        const webAppURL = "https://script.google.com/macros/s/AKfycbzPjpTDDoVadPAEjTTQYizWb2xqbVZ9SY4FvUW0vdBZcGWm8kY3NYmXZXzDkD6oeNjn5g/exec";
+        try {
+          await addDoc(collection(db, "spin_rewards"), {
+            name: name,
+            phone: phone,
+            reward: reward,
+            timestamp: serverTimestamp()
+          });
+          console.log("Data successfully written to Firestore!");
+        } catch (error) {
+          console.error("Error writing document:", error);
+        }
 
-        fetch(webAppURL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ name, phone, reward })
-        })
-        .then(response => response.text())
-        .then(data => console.log("Logged to Google Sheets:", data))
-        .catch(error => console.error("Error:", error));
       }, 2000);
-    }
+    };
   </script>
-</body>
-</html>
-
 </body>
 </html>
